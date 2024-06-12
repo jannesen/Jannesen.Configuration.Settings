@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Jannesen.Configuration.Settings</RootNamespace>
+        <AssemblyName>Jannesen.Configuration.Settings</AssemblyName>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+        <AssemblyOriginatorKeyFile>Jannesen.Configuration.Settings.snk</AssemblyOriginatorKeyFile>
+        <Nullable>enable</Nullable>
+        <IsTrimmable>True</IsTrimmable>
+        <IsAotCompatible>True</IsAotCompatible>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <WarningLevel>4</WarningLevel>
+        <SignAssembly>True</SignAssembly>
+        <Company>Jannesen B.V.</Company>
+        <Version>1.10.00.001</Version>
+        <RepositoryUrl>https://github.com/jannesen/Jannesen.Configuration.Settings</RepositoryUrl>
+        <Authors>Peter Jannesen</Authors>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+</Project>

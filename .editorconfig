@@ -1,0 +1,28 @@
+root = true
+
+[*.{cs,ttsql,sql,ts,tsx,js,css,scss,json,xml}]
+end_of_line = crlf
+charset = utf-8-bom
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.cs]
+# IDE0028: Use collection initializers or expressions
+dotnet_diagnostic.IDE0028.severity = none
+
+# IDE0057: Use range operator
+dotnet_diagnostic.IDE0057.severity = none
+
+# IDE0066: Use switch expression
+dotnet_diagnostic.IDE0066.severity = none
+
+# IDE0074: Use compound assignment
+dotnet_diagnostic.IDE0074.severity = none
+
+# IDE0090: Simplify 'new' expression
+dotnet_diagnostic.IDE0090.severity = none
+
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = none
+
