@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Xml;
@@ -10,73 +11,77 @@ namespace Jannesen.Configuration.Settings
     {
         private sealed class StaticSettings
         {
-            public  readonly            string                  ProgramDirectory;
-            public  readonly            NameValueCollection     AppSettings;
+            public  readonly            string                          ProgramExe;
+            public  readonly            string                          ProgramDirectory;
+            public  readonly            IReadOnlyCollection<string>     ConfigFilenames;
+            public  readonly            NameValueCollection             AppSettings;
 
             public                                              StaticSettings()
             {
-                ProgramDirectory = AppContext.BaseDirectory;
-                if (ProgramDirectory.EndsWith('\\')) {
-                    ProgramDirectory = ProgramDirectory.Substring(0, ProgramDirectory.Length - 1);
-                }
-
+                ProgramExe       = Path.ChangeExtension(Environment.ProcessPath ?? throw new AppSettingException("Environment.ProcessPath is null."), ".exe");
+                ProgramDirectory = Path.TrimEndingDirectorySeparator(Path.GetDirectoryName(ProgramExe) ?? throw new AppSettingException("GetDirectoryName(\"" + ProgramExe + "\") returns null."));
                 AppSettings = new NameValueCollection();
 
-                _loadAppSettings(Path.ChangeExtension(Environment.ProcessPath!, ".dll.config"), "/configuration/appSettings");
+                var configFilenames = new List<string>();
+                _loadAppSettings(configFilenames, Path.ChangeExtension(ProgramExe, ".dll.config"), "/configuration/appSettings");
+
+                ConfigFilenames = configFilenames.AsReadOnly();
             }
 
-            private                     void                    _loadAppSettings(string filename, string xpath)
-        {
-            var     xmlFile = new XmlDocument() { XmlResolver=null };
+            private                     void                    _loadAppSettings(List<string> configFilenames, string filename, string xpath)
+            {
+                var     xmlFile = new XmlDocument() { XmlResolver=null };
 
-            try {
-                using (var reader = new XmlTextReader(filename) {DtdProcessing=DtdProcessing.Prohibit, XmlResolver=null} ) {
-                    xmlFile.Load(reader);
+                try {
+                    using (var reader = new XmlTextReader(filename) {DtdProcessing=DtdProcessing.Prohibit, XmlResolver=null} ) {
+                        xmlFile.Load(reader);
+                    }
                 }
-            }
-            catch(Exception err) {
-                throw new AppSettingException("Failed to load '" + filename + "'.", err);
-            }
-
-            try {
-                var  elmAppSettings = xmlFile.SelectSingleNode(xpath) as XmlElement ?? throw new AppSettingException("Missing element " + xpath);
-
-                var file = elmAppSettings.Attributes["file"];
-                if (file != null) {
-                    _loadAppSettings(Path.Combine(Path.GetDirectoryName(filename)!, file.Value), "/appSettings");
+                catch(Exception err) {
+                    throw new AppSettingException("Failed to load '" + filename + "'.", err);
                 }
 
-                foreach (XmlNode node in elmAppSettings.ChildNodes) {
-                    if (node is XmlElement elm) {
-                        switch(elm.Name) {
-                        case "add": {
-                                var key   = elm.GetAttribute("key");
-                                var value = elm.GetAttribute("value");
-                                if (key != null) {
-                                    AppSettings.Add(key, value);
-                                }
-                            }
-                            break;
+                configFilenames.Add(filename);
 
-                        case "remove": {
-                                var key = elm.GetAttribute("key");
-                                if (key != null) {
-                                    AppSettings.Remove(key);
-                                }
-                            }
-                            break;
+                try {
+                    var  elmAppSettings = xmlFile.SelectSingleNode(xpath) as XmlElement ?? throw new AppSettingException("Missing element " + xpath);
 
-                        case "clear":
-                            AppSettings.Clear();
-                            break;
+                    var file = elmAppSettings.Attributes["file"];
+                    if (file != null) {
+                        _loadAppSettings(configFilenames, Path.Combine(Path.GetDirectoryName(filename)!, file.Value), "/appSettings");
+                    }
+
+                    foreach (XmlNode node in elmAppSettings.ChildNodes) {
+                        if (node is XmlElement elm) {
+                            switch(elm.Name) {
+                            case "add": {
+                                    var key   = elm.GetAttribute("key");
+                                    var value = elm.GetAttribute("value");
+                                    if (key != null) {
+                                        AppSettings.Add(key, value);
+                                    }
+                                }
+                                break;
+
+                            case "remove": {
+                                    var key = elm.GetAttribute("key");
+                                    if (key != null) {
+                                        AppSettings.Remove(key);
+                                    }
+                                }
+                                break;
+
+                            case "clear":
+                                AppSettings.Clear();
+                                break;
+                            }
                         }
                     }
                 }
+                catch(Exception err) {
+                    throw new AppSettingException("Error while processing '" + filename + "'.", err);
+                }
             }
-            catch(Exception err) {
-                throw new AppSettingException("Error while processing '" + filename + "'.", err);
-            }
-        }
         }
        
         private static  readonly    object                  _lockObject = new object();
@@ -94,15 +99,17 @@ namespace Jannesen.Configuration.Settings
             }
         }
 
-        public  static              string                  ProgramDirectory   => Settings.ProgramDirectory;
+        public  static              string                          ProgramExe          => Settings.ProgramExe;
+        public  static              string                          ProgramDirectory    => Settings.ProgramDirectory;
+        public  static              IReadOnlyCollection<string>     ConfigFilenames     => Settings.ConfigFilenames;
 
-        public  static              string                  GetSetting(string name)
+        public  static              string                          GetSetting(string name)
         {
             return GetSetting(name, null) ?? throw new AppSettingException("Missing appSetting '" + name + "'.");
         }
 
         [return: NotNullIfNotNull(nameof(defaultValue))]
-        public  static              string?                 GetSetting(string name, string? defaultValue)
+        public  static              string?                         GetSetting(string name, string? defaultValue)
         {
             var value = Settings.AppSettings[name];
 
@@ -132,7 +139,7 @@ namespace Jannesen.Configuration.Settings
             return value;
         }
 
-        public  static              string?                 GetExpandSetting(string name)
+        public  static              string?                         GetExpandSetting(string name)
         {
             string? value;
 
