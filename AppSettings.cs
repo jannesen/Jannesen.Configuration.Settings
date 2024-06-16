@@ -30,7 +30,7 @@ namespace Jannesen.Configuration.Settings
 
             private                     void                    _loadAppSettings(List<string> configFilenames, string filename, string xpath)
             {
-                var     xmlFile = new XmlDocument() { XmlResolver=null };
+                var xmlFile = new XmlDocument() { XmlResolver=null };
 
                 try {
                     using (var reader = new XmlTextReader(filename) {DtdProcessing=DtdProcessing.Prohibit, XmlResolver=null} ) {
@@ -44,7 +44,7 @@ namespace Jannesen.Configuration.Settings
                 configFilenames.Add(filename);
 
                 try {
-                    var  elmAppSettings = xmlFile.SelectSingleNode(xpath) as XmlElement ?? throw new AppSettingException("Missing element " + xpath);
+                    var elmAppSettings = xmlFile.SelectSingleNode(xpath) as XmlElement ?? throw new AppSettingException("Missing element " + xpath);
 
                     var file = elmAppSettings.Attributes["file"];
                     if (file != null) {
@@ -118,7 +118,7 @@ namespace Jannesen.Configuration.Settings
             }
 
             try {
-                int pbegin = 0;
+                var pbegin = 0;
 
                 while (pbegin < value.Length && (pbegin = value.IndexOf("${", pbegin, StringComparison.Ordinal)) >= 0) {
                     var pend = value.IndexOf('}', pbegin + 1);
