@@ -19,8 +19,11 @@ namespace Jannesen.Configuration.Settings
             public                                              StaticSettings()
             {
                 ProgramExe       = Path.ChangeExtension(Environment.ProcessPath ?? throw new AppSettingException("Environment.ProcessPath is null."), ".exe");
-                ProgramDirectory = Path.TrimEndingDirectorySeparator(Path.GetDirectoryName(ProgramExe) ?? throw new AppSettingException("GetDirectoryName(\"" + ProgramExe + "\") returns null."));
-                AppSettings = new NameValueCollection();
+                var path = Path.GetDirectoryName(ProgramExe);                
+                if (string.IsNullOrEmpty(path))
+                    throw new AppSettingException("Can't GetDirectoryName of '" + ProgramExe + "'.");
+                ProgramDirectory = Path.TrimEndingDirectorySeparator(path);
+                AppSettings      = new NameValueCollection();
 
                 var configFilenames = new List<string>();
                 _loadAppSettings(configFilenames, Path.ChangeExtension(ProgramExe, ".dll.config"), "/configuration/appSettings");
@@ -48,7 +51,11 @@ namespace Jannesen.Configuration.Settings
 
                     var file = elmAppSettings.Attributes["file"];
                     if (file != null) {
-                        _loadAppSettings(configFilenames, Path.Combine(Path.GetDirectoryName(filename)!, file.Value), "/appSettings");
+                        var path = Path.GetDirectoryName(filename);                
+                        if (string.IsNullOrEmpty(path))
+                            throw new AppSettingException("Can't GetDirectoryName of '" + filename + "'.");
+
+                        _loadAppSettings(configFilenames, Path.Combine(path, file.Value), "/appSettings");
                     }
 
                     foreach (XmlNode node in elmAppSettings.ChildNodes) {
