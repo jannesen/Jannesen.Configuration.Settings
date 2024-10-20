@@ -1,4 +1,4 @@
-﻿# Jannesen.Service
+# Jannesen.Service
 
 With this library it is easy to implement .net Windows Service.
 

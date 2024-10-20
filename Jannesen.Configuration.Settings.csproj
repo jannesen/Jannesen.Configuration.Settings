@@ -2,21 +2,21 @@
     <PropertyGroup>
         <RootNamespace>Jannesen.Configuration.Settings</RootNamespace>
         <AssemblyName>Jannesen.Configuration.Settings</AssemblyName>
-        
+
         <OutputType>Library</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <InvariantGlobalization>true</InvariantGlobalization>
         <Platforms>AnyCPU</Platforms>
-        
+
         <Nullable>enable</Nullable>
-        
+
         <IsTrimmable>True</IsTrimmable>
-        <IsAotCompatible>True</IsAotCompatible>        
+        <IsAotCompatible>True</IsAotCompatible>
         <SignAssembly>True</SignAssembly>
         <AssemblyOriginatorKeyFile>Jannesen.Configuration.Settings.snk</AssemblyOriginatorKeyFile>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
-        
+
         <Company>Jannesen B.V.</Company>
         <Version>1.10.00.001</Version>
         <Authors>Peter Jannesen</Authors>
@@ -31,7 +31,7 @@
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
@@ -46,4 +46,8 @@
         <OutputPath>bin\Release</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove=".git" />
+    </ItemGroup>
 </Project>

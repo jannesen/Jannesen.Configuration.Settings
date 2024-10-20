@@ -19,7 +19,7 @@ namespace Jannesen.Configuration.Settings
             public                                              StaticSettings()
             {
                 ProgramExe       = Path.ChangeExtension(Environment.ProcessPath ?? throw new AppSettingException("Environment.ProcessPath is null."), ".exe");
-                var path = Path.GetDirectoryName(ProgramExe);                
+                var path = Path.GetDirectoryName(ProgramExe);
                 if (string.IsNullOrEmpty(path))
                     throw new AppSettingException("Can't GetDirectoryName of '" + ProgramExe + "'.");
                 ProgramDirectory = Path.TrimEndingDirectorySeparator(path);
@@ -51,7 +51,7 @@ namespace Jannesen.Configuration.Settings
 
                     var file = elmAppSettings.Attributes["file"];
                     if (file != null) {
-                        var path = Path.GetDirectoryName(filename);                
+                        var path = Path.GetDirectoryName(filename);
                         if (string.IsNullOrEmpty(path))
                             throw new AppSettingException("Can't GetDirectoryName of '" + filename + "'.");
 
@@ -90,7 +90,7 @@ namespace Jannesen.Configuration.Settings
                 }
             }
         }
-       
+
         private static  readonly    object                  _lockObject = new object();
         private static              StaticSettings?         _Settings;
 
